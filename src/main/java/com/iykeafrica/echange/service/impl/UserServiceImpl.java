@@ -58,6 +58,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDto getUser(String userName) { //phoneNo, email or userId used to sign in successfully
+        UserDto returnValue = new UserDto();
+        UserEntity userEntity = new UserEntity();
+
+        if (utils.isNumber(userName)) {
+            userEntity = userRepository.findByPhoneNo(userName);
+        } else if (userName.contains(Character.toString('@'))) {
+            userEntity = userRepository.findByEmail(userName);
+        } else {
+            userEntity = userRepository.findByWalletId(userName);
+        }
+
+        BeanUtils.copyProperties(userEntity, returnValue);
+        return returnValue;
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String email_PhoneNo_WalletId) throws UsernameNotFoundException {
         UserEntity userEntity = new UserEntity();
         String signInByEmail_PhoneNo_WalletId = "";
