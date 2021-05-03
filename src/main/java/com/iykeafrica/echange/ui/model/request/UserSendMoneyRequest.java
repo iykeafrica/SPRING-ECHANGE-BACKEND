@@ -1,33 +1,24 @@
 package com.iykeafrica.echange.ui.model.request;
 
 public class UserSendMoneyRequest {
-    private String userWalletId;
-    private String requesterWalletId;
-    private double amount;
+    private String walletId;
+    private double lastSentReceivedAmount;
     private String transactionPin;
 
-    public String getUserWalletId() {
-        return userWalletId;
+    public String getWalletId() {
+        return walletId;
     }
 
-    public void setUserWalletId(String userWalletId) {
-        this.userWalletId = userWalletId;
+    public void setWalletId(String walletId) {
+        this.walletId = walletId;
     }
 
-    public String getRequesterWalletId() {
-        return requesterWalletId;
+    public double getLastSentReceivedAmount() {
+        return lastSentReceivedAmount;
     }
 
-    public void setRequesterWalletId(String requesterWalletId) {
-        this.requesterWalletId = requesterWalletId;
-    }
-
-    public double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(double amount) {
-        this.amount = amount;
+    public void setLastSentReceivedAmount(double lastSentReceivedAmount) {
+        this.lastSentReceivedAmount = lastSentReceivedAmount;
     }
 
     public String getTransactionPin() {

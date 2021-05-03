@@ -1,10 +1,12 @@
 package com.iykeafrica.echange.ui.model.response;
 
-public class UserCheckWalletBalanceResponse {
+public class UserRest {
     private String walletId;
     private String firstName;
     private String lastName;
-    private String walletBalance;
+    private String email;
+    private String phoneNo;
+    private double walletBalance;
 
     public String getWalletId() {
         return walletId;
@@ -30,11 +32,27 @@ public class UserCheckWalletBalanceResponse {
         this.lastName = lastName;
     }
 
-    public String getWalletBalance() {
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhoneNo() {
+        return phoneNo;
+    }
+
+    public void setPhoneNo(String phoneNo) {
+        this.phoneNo = phoneNo;
+    }
+
+    public double getWalletBalance() {
         return walletBalance;
     }
 
-    public void setWalletBalance(String walletBalance) {
+    public void setWalletBalance(double walletBalance) {
         this.walletBalance = walletBalance;
     }
 }

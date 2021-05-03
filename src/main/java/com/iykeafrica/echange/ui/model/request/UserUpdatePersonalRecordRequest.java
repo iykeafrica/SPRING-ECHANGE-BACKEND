@@ -1,20 +1,10 @@
-package com.iykeafrica.echange.ui.model.response;
+package com.iykeafrica.echange.ui.model.request;
 
-public class UserSignUpResponse {
-    private String walletId;
+public class UserUpdatePersonalRecordRequest {
     private String firstName;
     private String lastName;
     private String email;
     private String phoneNo;
-    private double walletBalance;
-
-    public String getWalletId() {
-        return walletId;
-    }
-
-    public void setWalletId(String walletId) {
-        this.walletId = walletId;
-    }
 
     public String getFirstName() {
         return firstName;
@@ -46,13 +36,5 @@ public class UserSignUpResponse {
 
     public void setPhoneNo(String phoneNo) {
         this.phoneNo = phoneNo;
-    }
-
-    public double getWalletBalance() {
-        return walletBalance;
-    }
-
-    public void setWalletBalance(double walletBalance) {
-        this.walletBalance = walletBalance;
     }
 }

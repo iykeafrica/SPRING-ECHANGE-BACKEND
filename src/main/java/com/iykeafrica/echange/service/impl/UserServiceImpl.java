@@ -64,13 +64,61 @@ public class UserServiceImpl implements UserService {
 
         if (utils.isNumber(userName)) {
             userEntity = userRepository.findByPhoneNo(userName);
+            if (userEntity == null)
+                throw new UsernameNotFoundException("No user with phone number: " + userName);
+
         } else if (userName.contains(Character.toString('@'))) {
             userEntity = userRepository.findByEmail(userName);
+
+            if (userEntity == null)
+                throw new UsernameNotFoundException("No user with email: " + userName);
+
         } else {
             userEntity = userRepository.findByWalletId(userName);
+            if (userEntity == null)
+                throw new UsernameNotFoundException("No user with walletId: " + userName);
         }
 
         BeanUtils.copyProperties(userEntity, returnValue);
+        return returnValue;
+    }
+
+    @Override
+    public UserDto getUserByWalletId(String walletId) {
+        UserDto returnValue = new UserDto();
+        UserEntity userEntity = userRepository.findByWalletId(walletId);
+
+        if (userEntity == null)
+            throw new UsernameNotFoundException("No user with walletId: " + walletId);
+
+        BeanUtils.copyProperties(userEntity, returnValue);
+        return returnValue;
+    }
+
+    @Override
+    public UserDto sendMoney(String requesterWalletId, UserDto user) {
+        UserDto returnValue = new UserDto();
+        UserEntity requesterEntity = userRepository.findByWalletId(requesterWalletId);
+        UserEntity senderEntity = userRepository.findByWalletId(user.getWalletId());
+
+        requesterEntity.setLastSentReceivedAmount(user.getLastSentReceivedAmount());
+        requesterEntity.setWalletBalance(user.getLastSentReceivedAmount());
+
+        senderEntity.setWalletBalance(user.getLastSentReceivedAmount());
+        senderEntity.setLastSentReceivedAmount(user.getLastSentReceivedAmount());
+
+//        if (senderEntity.getWalletBalance() < user.getLastSentReceivedAmount())
+//            throw new RuntimeException("Transaction declined, incorrect pin");
+
+//        String senderPin = bCryptPasswordEncoder.encode(user.getTransactionPin());
+//        if (senderEntity.getEncryptedTransactionPin() != senderPin)
+//            throw new RuntimeException("Transaction declined, incorrect pin");
+
+
+        UserEntity savedRequesterEntity = userRepository.save(requesterEntity);
+        UserEntity savedSenderEntity = userRepository.save(senderEntity);
+
+        BeanUtils.copyProperties(savedRequesterEntity, returnValue);
         return returnValue;
     }
 
