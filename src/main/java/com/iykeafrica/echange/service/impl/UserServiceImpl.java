@@ -1,12 +1,17 @@
 package com.iykeafrica.echange.service.impl;
 
+import com.iykeafrica.echange.exceptions.UserServiceException;
 import com.iykeafrica.echange.io.entity.UserEntity;
 import com.iykeafrica.echange.io.repositories.UserRepository;
 import com.iykeafrica.echange.service.UserService;
 import com.iykeafrica.echange.shared.dto.utils.Utils;
 import com.iykeafrica.echange.shared.dto.UserDto;
+import com.iykeafrica.echange.ui.model.response.ErrorMessages;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -45,7 +51,6 @@ public class UserServiceImpl implements UserService {
         userEntity.setWalletId(publicUserId);
         userEntity.setEncryptedTransactionPin(bCryptPasswordEncoder.encode(user.getTransactionPin()));
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-//        userEntity.setEncryptedPassword("123456");
         userEntity.setWalletBalance(0.00);
         userEntity.setLastSentReceivedAmount(0.00);
         userEntity.setFcmMessageToken("fGLoX3ybRPadWVOkbDUwmV:APA91bFWYD1-VPr_K6WtDWwy5Kt4CQptDGSzsJKPQn94hOjxu006AblSuOzsr7M5rS9SzO_rhS54gOYjAa6DbUo2lH5LFX_LJEq51BzjhyXjJAJPyF1Ld7d2k_gSo3F8OYoKf8hTzZD5");
@@ -76,7 +81,8 @@ public class UserServiceImpl implements UserService {
         } else {
             userEntity = userRepository.findByWalletId(userName);
             if (userEntity == null)
-                throw new UsernameNotFoundException("No user with walletId: " + userName);
+                throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+//                throw new UsernameNotFoundException("No user with walletId: " + userName);
         }
 
         BeanUtils.copyProperties(userEntity, returnValue);
@@ -98,27 +104,71 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto sendMoney(String requesterWalletId, UserDto user) {
         UserDto returnValue = new UserDto();
-        UserEntity requesterEntity = userRepository.findByWalletId(requesterWalletId);
-        UserEntity senderEntity = userRepository.findByWalletId(user.getWalletId());
 
+        UserEntity requesterEntity = userRepository.findByWalletId(requesterWalletId);
         requesterEntity.setLastSentReceivedAmount(user.getLastSentReceivedAmount());
         requesterEntity.setWalletBalance(user.getLastSentReceivedAmount());
 
+        UserEntity senderEntity = userRepository.findByWalletId(user.getWalletId());
         senderEntity.setWalletBalance(user.getLastSentReceivedAmount());
         senderEntity.setLastSentReceivedAmount(user.getLastSentReceivedAmount());
 
 //        if (senderEntity.getWalletBalance() < user.getLastSentReceivedAmount())
 //            throw new RuntimeException("Transaction declined, incorrect pin");
 
+
 //        String senderPin = bCryptPasswordEncoder.encode(user.getTransactionPin());
 //        if (senderEntity.getEncryptedTransactionPin() != senderPin)
 //            throw new RuntimeException("Transaction declined, incorrect pin");
 
-
         UserEntity savedRequesterEntity = userRepository.save(requesterEntity);
-        UserEntity savedSenderEntity = userRepository.save(senderEntity);
+        userRepository.save(senderEntity);
 
         BeanUtils.copyProperties(savedRequesterEntity, returnValue);
+        return returnValue;
+    }
+
+    @Override
+    public UserDto updateUser(String walletId, UserDto user) {
+        UserDto returnValue = new UserDto();
+        UserEntity userEntity = userRepository.findByWalletId(walletId);
+        if (userEntity == null)
+            throw new UsernameNotFoundException("Record does not exist");
+        userEntity.setFirstName(user.getFirstName());
+        userEntity.setLastName(user.getLastName());
+
+        UserEntity userUpdated = userRepository.save(userEntity);
+
+        BeanUtils.copyProperties(userUpdated, returnValue);
+        return returnValue;
+    }
+
+    @Override
+    public void deleteUser(String walletId) {
+        UserEntity userEntity = userRepository.findByWalletId(walletId);
+        if (userEntity == null)
+            throw new UsernameNotFoundException("Record does not exist");
+        userRepository.delete(userEntity);
+    }
+
+    @Override
+    public List<UserDto> getUsers(int page, int limit) {
+        List<UserDto> returnValue = new ArrayList<>();
+
+        if (page > 0)
+            page = page - 1;
+
+        Pageable pageableRequest = PageRequest.of(page, limit);
+        Page<UserEntity> usersPage = userRepository.findAll(pageableRequest);
+
+        List<UserEntity> users = usersPage.getContent();
+
+        for (UserEntity userEntity : users) {
+            UserDto userDto = new UserDto();
+            BeanUtils.copyProperties(userEntity, userDto);
+            returnValue.add(userDto);
+        }
+
         return returnValue;
     }
 

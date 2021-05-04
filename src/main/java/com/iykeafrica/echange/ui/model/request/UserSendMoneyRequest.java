@@ -2,6 +2,7 @@ package com.iykeafrica.echange.ui.model.request;
 
 public class UserSendMoneyRequest {
     private String walletId;
+    private String requesterWalletId;
     private double lastSentReceivedAmount;
     private String transactionPin;
 
@@ -11,6 +12,14 @@ public class UserSendMoneyRequest {
 
     public void setWalletId(String walletId) {
         this.walletId = walletId;
+    }
+
+    public String getRequesterWalletId() {
+        return requesterWalletId;
+    }
+
+    public void setRequesterWalletId(String requesterWalletId) {
+        this.requesterWalletId = requesterWalletId;
     }
 
     public double getLastSentReceivedAmount() {
