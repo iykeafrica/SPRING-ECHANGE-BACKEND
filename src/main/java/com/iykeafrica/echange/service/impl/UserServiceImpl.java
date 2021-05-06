@@ -4,9 +4,11 @@ import com.iykeafrica.echange.exceptions.UserServiceException;
 import com.iykeafrica.echange.io.entity.UserEntity;
 import com.iykeafrica.echange.io.repositories.UserRepository;
 import com.iykeafrica.echange.service.UserService;
+import com.iykeafrica.echange.shared.dto.ExtrasDTO;
 import com.iykeafrica.echange.shared.dto.utils.Utils;
 import com.iykeafrica.echange.shared.dto.UserDto;
 import com.iykeafrica.echange.ui.model.response.ErrorMessages;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -42,10 +44,17 @@ public class UserServiceImpl implements UserService {
         if (signUpEmail != null && signUpPhone != null)
             throw new RuntimeException("Record already exists");
 
-        UserDto returnValue = new UserDto();
-        UserEntity userEntity = new UserEntity();
+        for (int i = 0; i < user.getExtras().size(); i++){
+            ExtrasDTO extrasDTO = user.getExtras().get(i);
+            extrasDTO.setUserDetails(user);
+            extrasDTO.setExtrasId(utils.generateExtrasId(30));
+            user.getExtras().set(i, extrasDTO);
+        }
 
-        BeanUtils.copyProperties(user, userEntity);
+        UserDto returnValue = new UserDto();
+        ModelMapper modelMapper = new ModelMapper();
+
+        UserEntity userEntity = modelMapper.map(user, UserEntity.class);
 
         String publicUserId = utils.generateUserId(LENGTH_GENERATED_USER_ID);
         userEntity.setWalletId(publicUserId);
@@ -57,7 +66,7 @@ public class UserServiceImpl implements UserService {
         userEntity.setFcmAuthToken("Authorization: key=AAAASVplkPY:APA91bFeGQNCMRWSEalDDD64-nAmt2MDKBrCtB_WJzU2NMdUM1QzB6ef6CtZmmLcC4F8iipMOP1a6vnR215udpRC8zLYO7g68TLnJLaAprqwXqJkysFgoWFLQBDVYHFVl48ARcBrkxaz");
 
         UserEntity savedUser = userRepository.save(userEntity);
-        BeanUtils.copyProperties(savedUser, returnValue);
+        returnValue = modelMapper.map(savedUser, UserDto.class);
 
         return returnValue;
     }

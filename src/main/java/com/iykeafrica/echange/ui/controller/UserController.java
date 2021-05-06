@@ -1,16 +1,21 @@
 package com.iykeafrica.echange.ui.controller;
 
+import com.iykeafrica.echange.service.ExtrasService;
 import com.iykeafrica.echange.service.UserService;
+import com.iykeafrica.echange.shared.dto.ExtrasDTO;
 import com.iykeafrica.echange.shared.dto.UserDto;
 import com.iykeafrica.echange.ui.model.request.UserSendMoneyRequest;
 import com.iykeafrica.echange.ui.model.request.UserSignUpRequest;
 import com.iykeafrica.echange.ui.model.request.UserUpdatePersonalRecordRequest;
 import com.iykeafrica.echange.ui.model.response.*;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,16 +26,24 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    ExtrasService extrasServices;
+
+    @Autowired
+    ExtrasService extrasService;
+
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public UserRest createUser(@RequestBody UserSignUpRequest userSignUpRequest){
         UserRest returnValue = new UserRest();
-        UserDto userDto = new UserDto();
 
-        BeanUtils.copyProperties(userSignUpRequest, userDto);
+
+        ModelMapper modelMapper = new ModelMapper();
+        UserDto userDto = modelMapper.map(userSignUpRequest, UserDto.class);
+
         UserDto registeredUser = userService.createUser(userDto);
 
-        BeanUtils.copyProperties(registeredUser, returnValue);
+        returnValue = modelMapper.map(registeredUser, UserRest.class);
 
         return returnValue;
     }
@@ -111,4 +124,36 @@ public class UserController {
 
         return  returnValue;
     }
+
+    //http:localhost:8080/walletId/extras
+    @GetMapping(path = "/{walletId}/extras" , produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public List<ExtrasRest> getUserExtras(@PathVariable String walletId){
+        ModelMapper modelMapper = new ModelMapper();
+
+        List<ExtrasRest> returnValue = new ArrayList<>();
+        List<ExtrasDTO> extrasDTO = extrasServices.getExtras(walletId);
+
+        if (extrasDTO != null && !extrasDTO.isEmpty()) {
+            Type listType = new TypeToken<List<ExtrasRest>>() {}.getType();
+            returnValue = modelMapper.map(extrasDTO, listType);
+        }
+
+        return returnValue;
+    }
+
+    //http:localhost:8080/walletId/extras/addressId
+    @GetMapping(path = "/{walletId}/extras/{extrasId}" , produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public ExtrasRest getUserExtra(@PathVariable String walletId, @PathVariable String extrasId){
+        ModelMapper modelMapper = new ModelMapper();
+
+        ExtrasRest returnValue = new ExtrasRest();
+        ExtrasDTO extrasDTO = extrasService.getExtra(extrasId);
+
+        if (extrasDTO != null) {
+            returnValue = modelMapper.map(extrasDTO, ExtrasRest.class);
+        }
+
+        return returnValue;
+    }
+
 }

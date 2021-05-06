@@ -1,10 +1,8 @@
 package com.iykeafrica.echange.io.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity(name = "users_echange")
 public class UserEntity implements Serializable {
@@ -52,6 +50,9 @@ public class UserEntity implements Serializable {
 
     @Column(nullable = false)
     private Boolean emailVerificationStatus = false;
+
+    @OneToMany(mappedBy = "userDetails", cascade = CascadeType.ALL)
+    private List<ExtrasEntity> extras;
 
     public long getId() {
         return id;
@@ -163,5 +164,13 @@ public class UserEntity implements Serializable {
 
     public void setEmailVerificationStatus(Boolean emailVerificationStatus) {
         this.emailVerificationStatus = emailVerificationStatus;
+    }
+
+    public List<ExtrasEntity> getExtras() {
+        return extras;
+    }
+
+    public void setExtras(List<ExtrasEntity> extras) {
+        this.extras = extras;
     }
 }

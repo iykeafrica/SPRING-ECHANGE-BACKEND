@@ -1,6 +1,7 @@
 package com.iykeafrica.echange.shared.dto;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class UserDto implements Serializable {
     private static final long serialVersionUID = 7261182389483658612L;
@@ -20,6 +21,7 @@ public class UserDto implements Serializable {
     private String encryptedPassword;
     private String emailVerificationToken;
     private Boolean emailVerificationStatus = false;
+    private List<ExtrasDTO> extras;
 
     public long getId() {
         return id;
@@ -148,5 +150,13 @@ public class UserDto implements Serializable {
 
     public void setEmailVerificationStatus(Boolean emailVerificationStatus) {
         this.emailVerificationStatus = emailVerificationStatus;
+    }
+
+    public List<ExtrasDTO> getExtras() {
+        return extras;
+    }
+
+    public void setExtras(List<ExtrasDTO> extras) {
+        this.extras = extras;
     }
 }
