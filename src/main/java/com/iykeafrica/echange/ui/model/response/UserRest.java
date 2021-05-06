@@ -9,6 +9,7 @@ public class UserRest {
     private String email;
     private String phoneNo;
     private double walletBalance;
+    private String fcmMessageToken;
     private List<ExtrasRest> extras;
 
     public String getWalletId() {
@@ -57,6 +58,14 @@ public class UserRest {
 
     public void setWalletBalance(double walletBalance) {
         this.walletBalance = walletBalance;
+    }
+
+    public String getFcmMessageToken() {
+        return fcmMessageToken;
+    }
+
+    public void setFcmMessageToken(String fcmMessageToken) {
+        this.fcmMessageToken = fcmMessageToken;
     }
 
     public List<ExtrasRest> getExtras() {

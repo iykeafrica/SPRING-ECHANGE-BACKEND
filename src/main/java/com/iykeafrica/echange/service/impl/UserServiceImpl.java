@@ -62,7 +62,6 @@ public class UserServiceImpl implements UserService {
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userEntity.setWalletBalance(0.00);
         userEntity.setLastSentReceivedAmount(0.00);
-        userEntity.setFcmMessageToken("fGLoX3ybRPadWVOkbDUwmV:APA91bFWYD1-VPr_K6WtDWwy5Kt4CQptDGSzsJKPQn94hOjxu006AblSuOzsr7M5rS9SzO_rhS54gOYjAa6DbUo2lH5LFX_LJEq51BzjhyXjJAJPyF1Ld7d2k_gSo3F8OYoKf8hTzZD5");
         userEntity.setFcmAuthToken("Authorization: key=AAAASVplkPY:APA91bFeGQNCMRWSEalDDD64-nAmt2MDKBrCtB_WJzU2NMdUM1QzB6ef6CtZmmLcC4F8iipMOP1a6vnR215udpRC8zLYO7g68TLnJLaAprqwXqJkysFgoWFLQBDVYHFVl48ARcBrkxaz");
 
         UserEntity savedUser = userRepository.save(userEntity);
