@@ -6,6 +6,7 @@ import com.iykeafrica.echange.shared.dto.ExtrasDTO;
 import com.iykeafrica.echange.shared.dto.UserDto;
 import com.iykeafrica.echange.ui.model.request.UserSendMoneyRequest;
 import com.iykeafrica.echange.ui.model.request.UserSignUpRequest;
+import com.iykeafrica.echange.ui.model.request.UserUpdateFCMRequest;
 import com.iykeafrica.echange.ui.model.request.UserUpdatePersonalRecordRequest;
 import com.iykeafrica.echange.ui.model.response.*;
 import org.modelmapper.ModelMapper;
@@ -90,6 +91,20 @@ public class UserController {
         UserDto userDto = new UserDto();
 
         BeanUtils.copyProperties(userUpdatePersonalRecordRequest, userDto);
+
+        UserDto updatedUser = userService.updateUser(walletId, userDto);
+        BeanUtils.copyProperties(updatedUser, returnValue);
+
+        return returnValue;
+    }
+
+    @PutMapping(path = "/{walletId}/fcm", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public UserRest  updateUserFCM(@PathVariable String walletId, @RequestBody UserUpdateFCMRequest userUpdateFCMRequest){
+        UserRest returnValue = new UserRest();
+        UserDto userDto = new UserDto();
+
+        BeanUtils.copyProperties(userUpdateFCMRequest, userDto);
 
         UserDto updatedUser = userService.updateUser(walletId, userDto);
         BeanUtils.copyProperties(updatedUser, returnValue);
