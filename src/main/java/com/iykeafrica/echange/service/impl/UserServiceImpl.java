@@ -152,6 +152,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDto updateUserFCM(String walletId, UserDto user) {
+        UserDto returnValue = new UserDto();
+        UserEntity userEntity = userRepository.findByWalletId(walletId);
+        if (userEntity == null)
+            throw new UsernameNotFoundException("Record does not exist");
+        userEntity.setFcmMessageToken(user.getFcmMessageToken());
+
+        UserEntity userUpdated = userRepository.save(userEntity);
+
+        BeanUtils.copyProperties(userUpdated, returnValue);
+        return returnValue;
+    }
+
+
+
+    @Override
     public void deleteUser(String walletId) {
         UserEntity userEntity = userRepository.findByWalletId(walletId);
         if (userEntity == null)

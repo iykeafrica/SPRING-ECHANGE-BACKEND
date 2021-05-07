@@ -69,7 +69,7 @@ public class UserController {
         return returnValue;
     }
 
-    @PutMapping(path = "send-money/{requesterWalletId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+    @PutMapping(path = "{requesterWalletId}/send-money", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public UserSendMoneyResponse sendMoney(@PathVariable String requesterWalletId, @RequestBody UserSendMoneyRequest userSendMoneyRequest){
         UserSendMoneyResponse returnValue = new UserSendMoneyResponse();
@@ -106,7 +106,7 @@ public class UserController {
 
         BeanUtils.copyProperties(userUpdateFCMRequest, userDto);
 
-        UserDto updatedUser = userService.updateUser(walletId, userDto);
+        UserDto updatedUser = userService.updateUserFCM(walletId, userDto);
         BeanUtils.copyProperties(updatedUser, returnValue);
 
         return returnValue;

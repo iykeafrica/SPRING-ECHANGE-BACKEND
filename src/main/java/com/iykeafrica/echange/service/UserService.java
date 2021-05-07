@@ -12,6 +12,7 @@ public interface UserService extends UserDetailsService {
     UserDto getUserByWalletId(String walletId);
     UserDto sendMoney(String requesterWalletId, UserDto user);
     UserDto updateUser(String walletId, UserDto user);
+    UserDto updateUserFCM(String walletId, UserDto user);
     void deleteUser(String walletId);
     List<UserDto> getUsers(int page, int limit);
 }
