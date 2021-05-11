@@ -111,29 +111,43 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto sendMoney(String requesterWalletId, UserDto user) {
+    public UserDto creditMoney(String requesterWalletId, UserDto user) {
         UserDto returnValue = new UserDto();
 
-        UserEntity senderEntity = userRepository.findByWalletId(user.getWalletId());
-        senderEntity.setWalletBalance(user.getLastSentReceivedAmount());
-        senderEntity.setLastSentReceivedAmount(user.getLastSentReceivedAmount());
-        userRepository.save(senderEntity);
-
-//        if (senderEntity.getWalletBalance() < user.getLastSentReceivedAmount())
-//            throw new RuntimeException("Transaction declined, incorrect pin");
-
-
-//        String senderPin = bCryptPasswordEncoder.encode(user.getTransactionPin());
-//        if (senderEntity.getEncryptedTransactionPin() != senderPin)
-//            throw new RuntimeException("Transaction declined, incorrect pin");
-
         UserEntity requesterEntity = userRepository.findByWalletId(requesterWalletId);
+        if(requesterEntity == null)
+            throw new UsernameNotFoundException("User with id " + user.getWalletId() + " not found.");
+
         requesterEntity.setLastSentReceivedAmount(user.getLastSentReceivedAmount());
-        requesterEntity.setWalletBalance(user.getLastSentReceivedAmount());
+        requesterEntity.setWalletBalance(requesterEntity.getWalletBalance() + user.getLastSentReceivedAmount());
 
         UserEntity savedRequesterEntity = userRepository.save(requesterEntity);
 
         BeanUtils.copyProperties(savedRequesterEntity, returnValue);
+        return returnValue;
+    }
+
+    @Override
+    public UserDto debitMoney(String senderWalletId, UserDto user) {
+        UserDto returnValue = new UserDto();
+
+        UserEntity senderEntity = userRepository.findByWalletId(senderWalletId);
+        if(senderEntity == null)
+            throw new UsernameNotFoundException("User with id " + user.getWalletId() + " not found.");
+
+        if (!bCryptPasswordEncoder.matches(user.getTransactionPin(), senderEntity.getEncryptedTransactionPin()))
+            throw new RuntimeException("Transaction declined, incorrect pin");
+
+
+        if (senderEntity.getWalletBalance() < user.getLastSentReceivedAmount())
+            throw new RuntimeException("Insufficient Balance");
+
+        senderEntity.setLastSentReceivedAmount(user.getLastSentReceivedAmount());
+        senderEntity.setWalletBalance(senderEntity.getWalletBalance() - user.getLastSentReceivedAmount());
+
+        UserEntity savedSenderEntity = userRepository.save(senderEntity);
+
+        BeanUtils.copyProperties(savedSenderEntity, returnValue);
         return returnValue;
     }
 

@@ -6,7 +6,8 @@ public class UserSendMoneyResponse { //for requester
     private String firstName;
     private String lastName;
     private String fcmToken;
-    private double amount;
+    private double walletBalance;
+    private double lastSentReceivedAmount;
 
     public String getMessageId() {
         return messageId;
@@ -48,11 +49,19 @@ public class UserSendMoneyResponse { //for requester
         this.fcmToken = fcmToken;
     }
 
-    public double getAmount() {
-        return amount;
+    public double getWalletBalance() {
+        return walletBalance;
     }
 
-    public void setAmount(double amount) {
-        this.amount = amount;
+    public void setWalletBalance(double walletBalance) {
+        this.walletBalance = walletBalance;
+    }
+
+    public double getLastSentReceivedAmount() {
+        return lastSentReceivedAmount;
+    }
+
+    public void setLastSentReceivedAmount(double lastSentReceivedAmount) {
+        this.lastSentReceivedAmount = lastSentReceivedAmount;
     }
 }

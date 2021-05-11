@@ -68,17 +68,19 @@ public class UserController {
         return returnValue;
     }
 
-    @PutMapping(path = "send-money/{requesterWalletId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+    //http://localhost:8081/echange-app-ws/users/NllBt6fcMB7Rk71AYJvVvU6mjIlHdo/send-money/gUFGXOrRo4Wtfc1DDPXBzTMCevNe0t
+    @PutMapping(path = "{senderWalletId}/send-money/{requesterWalletId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public UserSendMoneyResponse sendMoney(@PathVariable String requesterWalletId, @RequestBody UserSendMoneyRequest userSendMoneyRequest){
+    public UserSendMoneyResponse sendMoney(@PathVariable String senderWalletId, @PathVariable String requesterWalletId, @RequestBody UserSendMoneyRequest userSendMoneyRequest){
         UserSendMoneyResponse returnValue = new UserSendMoneyResponse();
         UserDto userDto = new UserDto();
 
         BeanUtils.copyProperties(userSendMoneyRequest, userDto);
 
-        UserDto moneySent = userService.sendMoney(requesterWalletId, userDto);
+        UserDto moneyDebited = userService.debitMoney(senderWalletId, userDto);
 
-        BeanUtils.copyProperties(moneySent, returnValue);
+        UserDto moneyCredited = userService.creditMoney(requesterWalletId, userDto);
+        BeanUtils.copyProperties(moneyCredited, returnValue);
 
         return returnValue;
     }
