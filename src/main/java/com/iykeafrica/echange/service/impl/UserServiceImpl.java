@@ -114,13 +114,10 @@ public class UserServiceImpl implements UserService {
     public UserDto sendMoney(String requesterWalletId, UserDto user) {
         UserDto returnValue = new UserDto();
 
-        UserEntity requesterEntity = userRepository.findByWalletId(requesterWalletId);
-        requesterEntity.setLastSentReceivedAmount(user.getLastSentReceivedAmount());
-        requesterEntity.setWalletBalance(user.getLastSentReceivedAmount());
-
         UserEntity senderEntity = userRepository.findByWalletId(user.getWalletId());
         senderEntity.setWalletBalance(user.getLastSentReceivedAmount());
         senderEntity.setLastSentReceivedAmount(user.getLastSentReceivedAmount());
+        userRepository.save(senderEntity);
 
 //        if (senderEntity.getWalletBalance() < user.getLastSentReceivedAmount())
 //            throw new RuntimeException("Transaction declined, incorrect pin");
@@ -130,8 +127,11 @@ public class UserServiceImpl implements UserService {
 //        if (senderEntity.getEncryptedTransactionPin() != senderPin)
 //            throw new RuntimeException("Transaction declined, incorrect pin");
 
+        UserEntity requesterEntity = userRepository.findByWalletId(requesterWalletId);
+        requesterEntity.setLastSentReceivedAmount(user.getLastSentReceivedAmount());
+        requesterEntity.setWalletBalance(user.getLastSentReceivedAmount());
+
         UserEntity savedRequesterEntity = userRepository.save(requesterEntity);
-        userRepository.save(senderEntity);
 
         BeanUtils.copyProperties(savedRequesterEntity, returnValue);
         return returnValue;
