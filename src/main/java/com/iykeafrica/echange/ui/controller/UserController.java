@@ -69,17 +69,19 @@ public class UserController {
         return returnValue;
     }
 
-    @PutMapping(path = "{requesterWalletId}/send-money", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+    //http://localhost:8081/echange-app-ws/users/NllBt6fcMB7Rk71AYJvVvU6mjIlHdo/send-money/gUFGXOrRo4Wtfc1DDPXBzTMCevNe0t
+    @PutMapping(path = "{senderWalletId}/send-money/{requesterWalletId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public UserSendMoneyResponse sendMoney(@PathVariable String requesterWalletId, @RequestBody UserSendMoneyRequest userSendMoneyRequest){
+    public UserSendMoneyResponse sendMoney(@PathVariable String senderWalletId, @PathVariable String requesterWalletId, @RequestBody UserSendMoneyRequest userSendMoneyRequest){
         UserSendMoneyResponse returnValue = new UserSendMoneyResponse();
         UserDto userDto = new UserDto();
 
         BeanUtils.copyProperties(userSendMoneyRequest, userDto);
 
-        UserDto moneySent = userService.sendMoney(requesterWalletId, userDto);
+        UserDto moneyDebited = userService.debitMoney(senderWalletId, userDto);
 
-        BeanUtils.copyProperties(moneySent, returnValue);
+        UserDto moneyCredited = userService.creditMoney(requesterWalletId, userDto);
+        BeanUtils.copyProperties(moneyCredited, returnValue);
 
         return returnValue;
     }
@@ -118,6 +120,17 @@ public class UserController {
         OperationStatusModel returnValue = new OperationStatusModel();
 
         userService.deleteUser(walletId);
+
+        returnValue.setOperationName(RequestOperationName.DELETE.name());
+        returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        return returnValue;
+    }
+
+    @DeleteMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public OperationStatusModel deleteAllUser(){
+        OperationStatusModel returnValue = new OperationStatusModel();
+
+        userService.deleteAllUser();
 
         returnValue.setOperationName(RequestOperationName.DELETE.name());
         returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());

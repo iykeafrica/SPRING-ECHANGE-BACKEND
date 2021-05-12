@@ -42,7 +42,8 @@ public class UserServiceImpl implements UserService {
         UserEntity signUpPhone = userRepository.findByPhoneNo(user.getPhoneNo());
 
         if (signUpEmail != null && signUpPhone != null)
-            throw new RuntimeException("Record already exists");
+            throw new UserServiceException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage()
+                    + " for:\n" + user.getEmail() + " and:\n" + user.getPhoneNo());
 
         for (int i = 0; i < user.getExtras().size(); i++){
             ExtrasDTO extrasDTO = user.getExtras().get(i);
@@ -60,9 +61,10 @@ public class UserServiceImpl implements UserService {
         userEntity.setWalletId(publicUserId);
         userEntity.setEncryptedTransactionPin(bCryptPasswordEncoder.encode(user.getTransactionPin()));
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        userEntity.setWalletBalance(0.00);
+        userEntity.setWalletBalance(1000.00);
         userEntity.setLastSentReceivedAmount(0.00);
-        userEntity.setFcmAuthToken("Authorization: key=AAAASVplkPY:APA91bFeGQNCMRWSEalDDD64-nAmt2MDKBrCtB_WJzU2NMdUM1QzB6ef6CtZmmLcC4F8iipMOP1a6vnR215udpRC8zLYO7g68TLnJLaAprqwXqJkysFgoWFLQBDVYHFVl48ARcBrkxaz");
+        userEntity.setFcmMessageToken("");
+        userEntity.setFcmAuthToken("");
 
         UserEntity savedUser = userRepository.save(userEntity);
         returnValue = modelMapper.map(savedUser, UserDto.class);
@@ -78,19 +80,18 @@ public class UserServiceImpl implements UserService {
         if (utils.isNumber(userName)) {
             userEntity = userRepository.findByPhoneNo(userName);
             if (userEntity == null)
-                throw new UsernameNotFoundException("No user with phone number: " + userName);
+                throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage() + " for:\n" + userName);
 
         } else if (userName.contains(Character.toString('@'))) {
             userEntity = userRepository.findByEmail(userName);
 
             if (userEntity == null)
-                throw new UsernameNotFoundException("No user with email: " + userName);
+                throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage() + " for:\n" + userName);
 
         } else {
             userEntity = userRepository.findByWalletId(userName);
             if (userEntity == null)
-                throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
-//                throw new UsernameNotFoundException("No user with walletId: " + userName);
+                throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage() + " for:\n" + userName);
         }
 
         BeanUtils.copyProperties(userEntity, returnValue);
@@ -103,36 +104,52 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userRepository.findByWalletId(walletId);
 
         if (userEntity == null)
-            throw new UsernameNotFoundException("No user with walletId: " + walletId);
+            throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage() + " for:\n" + walletId);
 
         BeanUtils.copyProperties(userEntity, returnValue);
         return returnValue;
     }
 
     @Override
-    public UserDto sendMoney(String requesterWalletId, UserDto user) {
+    public UserDto creditMoney(String requesterWalletId, UserDto user) {
         UserDto returnValue = new UserDto();
 
         UserEntity requesterEntity = userRepository.findByWalletId(requesterWalletId);
+        if(requesterEntity == null)
+            throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage() + " for:\n" + requesterWalletId);
+
         requesterEntity.setLastSentReceivedAmount(user.getLastSentReceivedAmount());
-        requesterEntity.setWalletBalance(user.getLastSentReceivedAmount());
-
-        UserEntity senderEntity = userRepository.findByWalletId(user.getWalletId());
-        senderEntity.setWalletBalance(user.getLastSentReceivedAmount());
-        senderEntity.setLastSentReceivedAmount(user.getLastSentReceivedAmount());
-
-//        if (senderEntity.getWalletBalance() < user.getLastSentReceivedAmount())
-//            throw new RuntimeException("Transaction declined, incorrect pin");
-
-
-//        String senderPin = bCryptPasswordEncoder.encode(user.getTransactionPin());
-//        if (senderEntity.getEncryptedTransactionPin() != senderPin)
-//            throw new RuntimeException("Transaction declined, incorrect pin");
+        requesterEntity.setWalletBalance(requesterEntity.getWalletBalance() + user.getLastSentReceivedAmount());
 
         UserEntity savedRequesterEntity = userRepository.save(requesterEntity);
-        userRepository.save(senderEntity);
 
         BeanUtils.copyProperties(savedRequesterEntity, returnValue);
+        return returnValue;
+    }
+
+    @Override
+    public UserDto debitMoney(String senderWalletId, UserDto user) {
+        UserDto returnValue = new UserDto();
+
+        UserEntity senderEntity = userRepository.findByWalletId(senderWalletId);
+        if(senderEntity == null)
+            throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage() + " for:\n" + senderWalletId);
+
+        if (!bCryptPasswordEncoder.matches(user.getTransactionPin(), senderEntity.getEncryptedTransactionPin()))
+            throw new UserServiceException(ErrorMessages.WRONG_TRANSACTION_PIN.getErrorMessage());
+
+        if (senderEntity.getWalletBalance() < user.getLastSentReceivedAmount() )
+            throw new UserServiceException(ErrorMessages.INSUFFICIENT_BALANCE.getErrorMessage());
+
+        if (user.getLastSentReceivedAmount() <= 1)
+            throw new UserServiceException(ErrorMessages.LOW_AMOUNT.getErrorMessage());
+
+        senderEntity.setLastSentReceivedAmount(user.getLastSentReceivedAmount());
+        senderEntity.setWalletBalance(senderEntity.getWalletBalance() - user.getLastSentReceivedAmount());
+
+        UserEntity savedSenderEntity = userRepository.save(senderEntity);
+
+        BeanUtils.copyProperties(savedSenderEntity, returnValue);
         return returnValue;
     }
 
@@ -141,7 +158,7 @@ public class UserServiceImpl implements UserService {
         UserDto returnValue = new UserDto();
         UserEntity userEntity = userRepository.findByWalletId(walletId);
         if (userEntity == null)
-            throw new UsernameNotFoundException("Record does not exist");
+            throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage() + " for:\n" + walletId);
         userEntity.setFirstName(user.getFirstName());
         userEntity.setLastName(user.getLastName());
 
@@ -156,7 +173,7 @@ public class UserServiceImpl implements UserService {
         UserDto returnValue = new UserDto();
         UserEntity userEntity = userRepository.findByWalletId(walletId);
         if (userEntity == null)
-            throw new UsernameNotFoundException("Record does not exist");
+            throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage() + " for:\n" + walletId);
         userEntity.setFcmMessageToken(user.getFcmMessageToken());
 
         UserEntity userUpdated = userRepository.save(userEntity);
@@ -165,14 +182,18 @@ public class UserServiceImpl implements UserService {
         return returnValue;
     }
 
-
-
     @Override
     public void deleteUser(String walletId) {
         UserEntity userEntity = userRepository.findByWalletId(walletId);
         if (userEntity == null)
-            throw new UsernameNotFoundException("Record does not exist");
+            throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage() + " for:\n" + walletId);
+
         userRepository.delete(userEntity);
+    }
+
+    @Override
+    public void deleteAllUser() {
+        userRepository.deleteAll();
     }
 
     @Override
@@ -205,7 +226,7 @@ public class UserServiceImpl implements UserService {
         if (utils.isNumber(email_PhoneNo_WalletId)) {
             userEntity = userRepository.findByPhoneNo(email_PhoneNo_WalletId);
             if (userEntity == null)
-                throw new UsernameNotFoundException("No user with phone number: " + email_PhoneNo_WalletId);
+                throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage() + " for:\n" + email_PhoneNo_WalletId);
 
             signInByEmail_PhoneNo_WalletId = userEntity.getPhoneNo();
 
@@ -213,13 +234,13 @@ public class UserServiceImpl implements UserService {
             userEntity = userRepository.findByEmail(email_PhoneNo_WalletId);
 
             if (userEntity == null)
-                throw new UsernameNotFoundException("No user with email: " + email_PhoneNo_WalletId);
+                throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage() + " for:\n" + email_PhoneNo_WalletId);
             signInByEmail_PhoneNo_WalletId = userEntity.getEmail();
 
         } else {
             userEntity = userRepository.findByWalletId(email_PhoneNo_WalletId);
             if (userEntity == null)
-                throw new UsernameNotFoundException("No user with " + email_PhoneNo_WalletId);
+                throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage() + " for:\n" + email_PhoneNo_WalletId);
             signInByEmail_PhoneNo_WalletId = userEntity.getWalletId();
         }
 
