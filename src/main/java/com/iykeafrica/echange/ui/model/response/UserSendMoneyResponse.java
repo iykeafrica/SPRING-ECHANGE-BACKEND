@@ -1,21 +1,11 @@
 package com.iykeafrica.echange.ui.model.response;
 
 public class UserSendMoneyResponse { //for requester
-    private String messageId;
     private String walletId;
     private String firstName;
     private String lastName;
-    private String fcmToken;
-    private double walletBalance;
+    private String fcmMessageToken;
     private double lastSentReceivedAmount;
-
-    public String getMessageId() {
-        return messageId;
-    }
-
-    public void setMessageId(String messageId) {
-        this.messageId = messageId;
-    }
 
     public String getWalletId() {
         return walletId;
@@ -41,20 +31,12 @@ public class UserSendMoneyResponse { //for requester
         this.lastName = lastName;
     }
 
-    public String getFcmToken() {
-        return fcmToken;
+    public String getFcmMessageToken() {
+        return fcmMessageToken;
     }
 
-    public void setFcmToken(String fcmToken) {
-        this.fcmToken = fcmToken;
-    }
-
-    public double getWalletBalance() {
-        return walletBalance;
-    }
-
-    public void setWalletBalance(double walletBalance) {
-        this.walletBalance = walletBalance;
+    public void setFcmMessageToken(String fcmMessageToken) {
+        this.fcmMessageToken = fcmMessageToken;
     }
 
     public double getLastSentReceivedAmount() {
