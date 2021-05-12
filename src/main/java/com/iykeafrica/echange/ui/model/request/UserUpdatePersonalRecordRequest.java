@@ -1,20 +1,11 @@
-package com.iykeafrica.echange.ui.model.response;
+package com.iykeafrica.echange.ui.model.request;
 
-public class UserVerifyWalletIdResponse {
-    private String walletId;
+public class UserUpdatePersonalRecordRequest {
     private String firstName;
     private String lastName;
 
     public String getFirstName() {
         return firstName;
-    }
-
-    public String getWalletId() {
-        return walletId;
-    }
-
-    public void setWalletId(String walletId) {
-        this.walletId = walletId;
     }
 
     public void setFirstName(String firstName) {

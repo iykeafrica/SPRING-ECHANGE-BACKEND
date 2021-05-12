@@ -16,4 +16,9 @@ public class EchangeApplication {
     public BCryptPasswordEncoder bCryptPasswordEncoder() { //used for securing password->
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public SpringApplicationContext springApplicationContext() {
+        return new SpringApplicationContext();
+    }
 }

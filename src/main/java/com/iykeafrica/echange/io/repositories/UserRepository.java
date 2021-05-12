@@ -1,10 +1,9 @@
 package com.iykeafrica.echange.io.repositories;
 
 import com.iykeafrica.echange.io.entity.UserEntity;
-import com.iykeafrica.echange.service.UserService;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface UserRepository extends CrudRepository<UserEntity, Long> {
+public interface UserRepository extends PagingAndSortingRepository<UserEntity, Long> {
 
     UserEntity findByEmail(String email);
     UserEntity findByPhoneNo(String phoneNo);

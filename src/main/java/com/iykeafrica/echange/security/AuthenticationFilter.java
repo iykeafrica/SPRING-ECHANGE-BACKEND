@@ -1,6 +1,9 @@
 package com.iykeafrica.echange.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.iykeafrica.echange.SpringApplicationContext;
+import com.iykeafrica.echange.service.UserService;
+import com.iykeafrica.echange.shared.dto.UserDto;
 import com.iykeafrica.echange.shared.dto.utils.Utils;
 import com.iykeafrica.echange.ui.model.request.UserSignInRequest;
 import io.jsonwebtoken.Jwts;
@@ -76,7 +79,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
 
-        String userName = ((User) authResult.getPrincipal()).getUsername();
+        String userName = ((User) authResult.getPrincipal()).getUsername(); //phoneNo,email or userId used to sign in successfully
 //        String tokenSecret = new SecurityConstants.getTokenSecret();
 
         //To be used in the authorization filter
@@ -88,7 +91,13 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 .signWith(SignatureAlgorithm.HS512, SecurityConstants.TOKEN_SECRET)
                 .compact();
 
+        //to get walletId
+        UserService userService = (UserService) SpringApplicationContext.getBean("userServiceImpl");
+        UserDto userDto = userService.getUser(userName);
+        String walletId = userDto.getWalletId();
+
         response.addHeader(SecurityConstants.HEADER_STRING, SecurityConstants.TOKEN_PREFIX + token);
+        response.addHeader(SecurityConstants.USER_ID, walletId);
     }
 
 }

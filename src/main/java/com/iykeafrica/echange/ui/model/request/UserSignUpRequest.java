@@ -1,5 +1,7 @@
 package com.iykeafrica.echange.ui.model.request;
 
+import java.util.List;
+
 public class UserSignUpRequest {
     private String firstName;
     private String lastName;
@@ -8,6 +10,7 @@ public class UserSignUpRequest {
     private String fcmMessageToken;
     private String password;
     private String transactionPin;
+    private List<ExtrasRequestModel> extras;
 
 
     public String getFirstName() {
@@ -64,5 +67,13 @@ public class UserSignUpRequest {
 
     public void setTransactionPin(String transactionPin) {
         this.transactionPin = transactionPin;
+    }
+
+    public List<ExtrasRequestModel> getExtras() {
+        return extras;
+    }
+
+    public void setExtras(List<ExtrasRequestModel> extras) {
+        this.extras = extras;
     }
 }

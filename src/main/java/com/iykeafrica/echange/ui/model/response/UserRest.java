@@ -2,14 +2,14 @@ package com.iykeafrica.echange.ui.model.response;
 
 import java.util.List;
 
-public class UserSignUpResponse {
+public class UserRest {
     private String walletId;
     private String firstName;
     private String lastName;
     private String email;
     private String phoneNo;
     private double walletBalance;
-
+    private List<ExtrasRest> extras;
 
     public String getWalletId() {
         return walletId;
@@ -59,4 +59,11 @@ public class UserSignUpResponse {
         this.walletBalance = walletBalance;
     }
 
+    public List<ExtrasRest> getExtras() {
+        return extras;
+    }
+
+    public void setExtras(List<ExtrasRest> extras) {
+        this.extras = extras;
+    }
 }
