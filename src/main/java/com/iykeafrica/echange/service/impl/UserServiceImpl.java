@@ -1,6 +1,7 @@
 package com.iykeafrica.echange.service.impl;
 
 import com.iykeafrica.echange.exceptions.UserServiceException;
+import com.iykeafrica.echange.io.entity.ExtrasEntity;
 import com.iykeafrica.echange.io.entity.UserEntity;
 import com.iykeafrica.echange.io.repositories.UserRepository;
 import com.iykeafrica.echange.service.UserService;
@@ -71,6 +72,30 @@ public class UserServiceImpl implements UserService {
 
         return returnValue;
     }
+
+//    @Override
+//    public UserDto createExtra(String walletID, UserDto user) {
+//
+//        UserEntity userEntity = userRepository.findByWalletId(walletID);
+//
+//        if (walletID == null)
+//            throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+//
+//        for (int i = 0; i < user.getExtras().size(); i++) {
+//            ExtrasDTO extrasDTO = user.getExtras().get(i);
+//            extrasDTO.setUserDetails(user);
+//            extrasDTO.setExtrasId(utils.generateExtrasId(30));
+//            user.getExtras().set(i, extrasDTO);
+//        }
+//
+//        UserDto returnValue = new UserDto();
+//        ModelMapper modelMapper = new ModelMapper();
+//
+//        ExtrasEntity extrasEntity = modelMapper.map(user, ExtrasEntity.class);
+//
+//
+//        return null;
+//    }
 
     @Override
     public UserDto getUser(String userName) { //phoneNo, email or userId used to sign in successfully
