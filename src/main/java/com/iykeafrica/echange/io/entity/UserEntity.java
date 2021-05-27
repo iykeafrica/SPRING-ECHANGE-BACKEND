@@ -52,7 +52,7 @@ public class UserEntity implements Serializable {
     private Boolean emailVerificationStatus = false;
 
     @OneToMany(mappedBy = "userDetails", cascade = CascadeType.ALL)
-    private List<ExtrasEntity> extras;
+    private List<TransactionEntity> transactions;
 
     public long getId() {
         return id;
@@ -166,11 +166,11 @@ public class UserEntity implements Serializable {
         this.emailVerificationStatus = emailVerificationStatus;
     }
 
-    public List<ExtrasEntity> getExtras() {
-        return extras;
+    public List<TransactionEntity> getTransactions() {
+        return transactions;
     }
 
-    public void setExtras(List<ExtrasEntity> extras) {
-        this.extras = extras;
+    public void setTransactions(List<TransactionEntity> transactions) {
+        this.transactions = transactions;
     }
 }

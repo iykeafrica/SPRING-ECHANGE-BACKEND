@@ -1,11 +1,11 @@
 package com.iykeafrica.echange.service.impl;
 
 import com.iykeafrica.echange.exceptions.UserServiceException;
-import com.iykeafrica.echange.io.entity.ExtrasEntity;
 import com.iykeafrica.echange.io.entity.UserEntity;
+import com.iykeafrica.echange.io.repositories.TransactionRepository;
 import com.iykeafrica.echange.io.repositories.UserRepository;
 import com.iykeafrica.echange.service.UserService;
-import com.iykeafrica.echange.shared.dto.ExtrasDTO;
+import com.iykeafrica.echange.shared.dto.TransactionDTO;
 import com.iykeafrica.echange.shared.dto.utils.Utils;
 import com.iykeafrica.echange.shared.dto.UserDto;
 import com.iykeafrica.echange.ui.model.response.ErrorMessages;
@@ -35,6 +35,9 @@ public class UserServiceImpl implements UserService {
     Utils utils;
 
     @Autowired
+    TransactionRepository transactionRepository;
+
+    @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
@@ -46,11 +49,11 @@ public class UserServiceImpl implements UserService {
             throw new UserServiceException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage()
                     + " for:\n" + user.getEmail() + " and:\n" + user.getPhoneNo());
 
-        for (int i = 0; i < user.getExtras().size(); i++){
-            ExtrasDTO extrasDTO = user.getExtras().get(i);
-            extrasDTO.setUserDetails(user);
-            extrasDTO.setExtrasId(utils.generateExtrasId(30));
-            user.getExtras().set(i, extrasDTO);
+        for (int i = 0; i < user.getTransactions().size(); i++) {
+            TransactionDTO transactionDTO = user.getTransactions().get(i);
+            transactionDTO.setUserDetails(user);
+            transactionDTO.setTransactionId(utils.generateExtrasId(30));
+            user.getTransactions().set(i, transactionDTO);
         }
 
         UserDto returnValue = new UserDto();
@@ -74,27 +77,35 @@ public class UserServiceImpl implements UserService {
     }
 
 //    @Override
-//    public UserDto createExtra(String walletID, UserDto user) {
+//    public UserDto createExtras(String walletId, UserDto user) {
+//        UserEntity userEntity = userRepository.findByWalletId(walletId);
 //
-//        UserEntity userEntity = userRepository.findByWalletId(walletID);
-//
-//        if (walletID == null)
+//        if (walletId == null)
 //            throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
 //
-//        for (int i = 0; i < user.getExtras().size(); i++) {
-//            ExtrasDTO extrasDTO = user.getExtras().get(i);
-//            extrasDTO.setUserDetails(user);
-//            extrasDTO.setExtrasId(utils.generateExtrasId(30));
-//            user.getExtras().set(i, extrasDTO);
-//        }
+//        UserEntity setUserEntity = new UserEntity();
 //
-//        UserDto returnValue = new UserDto();
 //        ModelMapper modelMapper = new ModelMapper();
 //
-//        ExtrasEntity extrasEntity = modelMapper.map(user, ExtrasEntity.class);
+//        for (int i = 0; i < user.getExtras().size(); i++) {
+//            ExtrasEntity extrasEntity = modelMapper.map(user, ExtrasEntity.class);
 //
+//            ExtrasDTO extrasDTO = user.getExtras().get(i);
 //
-//        return null;
+//            extrasEntity.setExtrasId(utils.generateExtrasId(30));
+//            extrasEntity.setAddress(extrasDTO.getAddress());
+//            extrasEntity.setType(extrasDTO.getType());
+//            extrasEntity.setUserDetails(userEntity);
+//
+//            ExtrasEntity savedExtra = extrasRepository.save(extrasEntity);
+//        }
+//
+//        UserEntity updatedExtras = userRepository.findByWalletId(walletId);
+//
+//        UserDto returnValue = new UserDto();
+//        returnValue = modelMapper.map(updatedExtras, UserDto.class);
+//
+//        return returnValue;
 //    }
 
     @Override
@@ -140,7 +151,7 @@ public class UserServiceImpl implements UserService {
         UserDto returnValue = new UserDto();
 
         UserEntity requesterEntity = userRepository.findByWalletId(requesterWalletId);
-        if(requesterEntity == null)
+        if (requesterEntity == null)
             throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage() + " for:\n" + requesterWalletId);
 
         requesterEntity.setLastSentReceivedAmount(user.getLastSentReceivedAmount());
@@ -157,13 +168,13 @@ public class UserServiceImpl implements UserService {
         UserDto returnValue = new UserDto();
 
         UserEntity senderEntity = userRepository.findByWalletId(senderWalletId);
-        if(senderEntity == null)
+        if (senderEntity == null)
             throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage() + " for:\n" + senderWalletId);
 
         if (!bCryptPasswordEncoder.matches(user.getTransactionPin(), senderEntity.getEncryptedTransactionPin()))
             throw new UserServiceException(ErrorMessages.WRONG_TRANSACTION_PIN.getErrorMessage());
 
-        if (senderEntity.getWalletBalance() < user.getLastSentReceivedAmount() )
+        if (senderEntity.getWalletBalance() < user.getLastSentReceivedAmount())
             throw new UserServiceException(ErrorMessages.INSUFFICIENT_BALANCE.getErrorMessage());
 
         if (user.getLastSentReceivedAmount() <= 1)

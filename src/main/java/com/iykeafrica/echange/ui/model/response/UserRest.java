@@ -9,7 +9,7 @@ public class UserRest {
     private String email;
     private String phoneNo;
     private double walletBalance;
-    private List<ExtrasRest> extras;
+    private List<TransactionRest> transactions;
 
     public String getWalletId() {
         return walletId;
@@ -59,11 +59,11 @@ public class UserRest {
         this.walletBalance = walletBalance;
     }
 
-    public List<ExtrasRest> getExtras() {
-        return extras;
+    public List<TransactionRest> getTransactions() {
+        return transactions;
     }
 
-    public void setExtras(List<ExtrasRest> extras) {
-        this.extras = extras;
+    public void setTransactions(List<TransactionRest> transaction) {
+        this.transactions = transaction;
     }
 }

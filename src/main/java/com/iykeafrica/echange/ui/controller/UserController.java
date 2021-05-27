@@ -1,8 +1,8 @@
 package com.iykeafrica.echange.ui.controller;
 
-import com.iykeafrica.echange.service.ExtrasService;
+import com.iykeafrica.echange.service.TransactionService;
 import com.iykeafrica.echange.service.UserService;
-import com.iykeafrica.echange.shared.dto.ExtrasDTO;
+import com.iykeafrica.echange.shared.dto.TransactionDTO;
 import com.iykeafrica.echange.shared.dto.UserDto;
 import com.iykeafrica.echange.ui.model.request.*;
 import com.iykeafrica.echange.ui.model.response.*;
@@ -25,16 +25,16 @@ public class UserController {
     UserService userService;
 
     @Autowired
-    ExtrasService extrasServices;
+    TransactionService transactionServices;
 
     @Autowired
-    ExtrasService extrasService;
+    TransactionService transactionService;
 
     @Autowired
-    ExtrasService extraService;
+    TransactionService transactionHistory;
 
     @Autowired
-    ExtrasService extraServices;
+    TransactionService transactionHistories;
 
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -54,35 +54,50 @@ public class UserController {
 
     @PostMapping(path = "/{walletID}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ExtrasRest addUserExtra(@PathVariable String walletID, @RequestBody ExtrasRequestModel addUserExtrasRequest) {
-        ExtrasRest returnValue = new ExtrasRest();
+    public TransactionRest addUserExtra(@PathVariable String walletID, @RequestBody TransactionRequestModel addUserExtrasRequest) {
+        TransactionRest returnValue = new TransactionRest();
 
         ModelMapper modelMapper = new ModelMapper();
 //        UserDto userDto = modelMapper.map(addUserExtrasRequest, UserDto.class);
-        ExtrasDTO extrasDTO = modelMapper.map(addUserExtrasRequest, ExtrasDTO.class);
+        TransactionDTO transactionDTO = modelMapper.map(addUserExtrasRequest, TransactionDTO.class);
 
 //        UserDto addedExtra = userService.createExtra(walletID, userDto);
-        ExtrasDTO addedExtra = extraService.createExtra(walletID, extrasDTO);
+        TransactionDTO addedExtra = transactionHistory.postTransaction(walletID, transactionDTO);
 
-        returnValue = modelMapper.map(addedExtra, ExtrasRest.class);
+        returnValue = modelMapper.map(addedExtra, TransactionRest.class);
 
         return returnValue;
     }
 
     @PostMapping(path = "/{walletID}/many", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ExtrasRest addUserExtras(@PathVariable String walletID, @RequestBody AddUserExtrasRequest addUserExtrasRequest) {
-        ExtrasRest returnValue = new ExtrasRest();
+    public TransactionRest addUserExtras(@PathVariable String walletID, @RequestBody AddUserExtrasRequest addUserExtrasRequest) {
+        TransactionRest returnValue = new TransactionRest();
 
         ModelMapper modelMapper = new ModelMapper();
         UserDto userDto = modelMapper.map(addUserExtrasRequest, UserDto.class);
 
-        ExtrasDTO addedExtras = extraServices.createExtras(walletID, userDto);
+        TransactionDTO addedExtras = transactionHistories.postTransactions(walletID, userDto);
 
-        returnValue = modelMapper.map(addedExtras, ExtrasRest.class);
+        returnValue = modelMapper.map(addedExtras, TransactionRest.class);
 
         return returnValue;
     }
+
+//    @PostMapping(path = "/{walletID}/many", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+//            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+//    public UserRest addUserExtras(@PathVariable String walletID, @RequestBody AddUserExtrasRequest addUserExtrasRequest) {
+//        UserRest returnValue = new UserRest();
+//
+//        ModelMapper modelMapper = new ModelMapper();
+//        UserDto userDto = modelMapper.map(addUserExtrasRequest, UserDto.class);
+//
+//        UserDto addedExtras = userService.createExtras(walletID, userDto);
+//
+//        returnValue = modelMapper.map(addedExtras, UserRest.class);
+//
+//        return returnValue;
+//    }
 
     @GetMapping(path = "/{userName}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public UserRest getUser(@PathVariable String userName) { //for admin user only; with phone, email or walletId
@@ -190,16 +205,16 @@ public class UserController {
 
     //http:localhost:8080/walletId/extras
     @GetMapping(path = "/{walletId}/extras", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public List<ExtrasRest> getUserExtras(@PathVariable String walletId) {
+    public List<TransactionRest> getUserExtras(@PathVariable String walletId) {
         ModelMapper modelMapper = new ModelMapper();
 
-        List<ExtrasRest> returnValue = new ArrayList<>();
-        List<ExtrasDTO> extrasDTO = extrasServices.getExtras(walletId);
+        List<TransactionRest> returnValue = new ArrayList<>();
+        List<TransactionDTO> transactionDTO = transactionServices.getTransactions(walletId);
 
-        if (extrasDTO != null && !extrasDTO.isEmpty()) {
-            Type listType = new TypeToken<List<ExtrasRest>>() {
+        if (transactionDTO != null && !transactionDTO.isEmpty()) {
+            Type listType = new TypeToken<List<TransactionRest>>() {
             }.getType();
-            returnValue = modelMapper.map(extrasDTO, listType);
+            returnValue = modelMapper.map(transactionDTO, listType);
         }
 
         return returnValue;
@@ -207,14 +222,14 @@ public class UserController {
 
     //http:localhost:8080/walletId/extras/addressId
     @GetMapping(path = "/{walletId}/extras/{extrasId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ExtrasRest getUserExtra(@PathVariable String walletId, @PathVariable String extrasId) {
+    public TransactionRest getUserExtra(@PathVariable String walletId, @PathVariable String extrasId) {
         ModelMapper modelMapper = new ModelMapper();
 
-        ExtrasRest returnValue = new ExtrasRest();
-        ExtrasDTO extrasDTO = extrasService.getExtra(extrasId);
+        TransactionRest returnValue = new TransactionRest();
+        TransactionDTO transactionDTO = transactionService.getTransaction(extrasId);
 
-        if (extrasDTO != null) {
-            returnValue = modelMapper.map(extrasDTO, ExtrasRest.class);
+        if (transactionDTO != null) {
+            returnValue = modelMapper.map(transactionDTO, TransactionRest.class);
         }
 
         return returnValue;

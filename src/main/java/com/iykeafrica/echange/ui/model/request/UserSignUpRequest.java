@@ -10,7 +10,7 @@ public class UserSignUpRequest {
     private String fcmMessageToken;
     private String password;
     private String transactionPin;
-    private List<ExtrasRequestModel> extras;
+    private List<TransactionRequestModel> transactions;
 
 
     public String getFirstName() {
@@ -69,11 +69,11 @@ public class UserSignUpRequest {
         this.transactionPin = transactionPin;
     }
 
-    public List<ExtrasRequestModel> getExtras() {
-        return extras;
+    public List<TransactionRequestModel> getTransactions() {
+        return transactions;
     }
 
-    public void setExtras(List<ExtrasRequestModel> extras) {
-        this.extras = extras;
+    public void setTransactions(List<TransactionRequestModel> transactions) {
+        this.transactions = transactions;
     }
 }

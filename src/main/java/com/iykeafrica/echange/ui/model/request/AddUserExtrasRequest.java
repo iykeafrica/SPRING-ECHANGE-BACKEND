@@ -4,13 +4,13 @@ import java.util.List;
 
 public class AddUserExtrasRequest {
 
-    private List<ExtrasRequestModel> extras;
+    private List<TransactionRequestModel> extras;
 
-    public List<ExtrasRequestModel> getExtras() {
+    public List<TransactionRequestModel> getExtras() {
         return extras;
     }
 
-    public void setExtras(List<ExtrasRequestModel> extras) {
+    public void setExtras(List<TransactionRequestModel> extras) {
         this.extras = extras;
     }
 }
