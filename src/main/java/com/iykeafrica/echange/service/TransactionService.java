@@ -9,6 +9,8 @@ public interface TransactionService {
 
     List<TransactionDTO> getTransactions(String walletId);
 
+//    List<TransactionDTO> getTransactions(int page, int limit, long date, String walletId);
+
     TransactionDTO getTransaction(String transactionId);
 
     TransactionDTO postTransaction(String walletId, TransactionDTO transactionDTO);

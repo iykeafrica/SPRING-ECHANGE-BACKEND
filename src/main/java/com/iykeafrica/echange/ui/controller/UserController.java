@@ -185,6 +185,26 @@ public class UserController {
         return returnValue;
     }
 
+//    @GetMapping(path = "/{walletId}/transactions", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+//    public List<TransactionRest> getUserTransactions(@RequestParam(value = "page", defaultValue = "0") int page,
+//                                                     @RequestParam(value = "limit", defaultValue = "12") int limit,
+//                                                     @RequestParam(value = "date", defaultValue = "date") long date,
+//                                                     @PathVariable String walletId) {
+//
+//        ModelMapper modelMapper = new ModelMapper();
+//
+//        List<TransactionRest> returnValue = new ArrayList<>();
+//        List<TransactionDTO> transactionDTO = transactionServices.getTransactions(page, limit, date, walletId);
+//
+//        if (transactionDTO != null && !transactionDTO.isEmpty()) {
+//            Type listType = new TypeToken<List<TransactionRest>>() {
+//            }.getType();
+//            returnValue = modelMapper.map(transactionDTO, listType);
+//        }
+//
+//        return returnValue;
+//    }
+
     //http:localhost:8080/walletId/transactions/transactionId
     @GetMapping(path = "/{walletId}/transactions/{transactionId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public TransactionRest getUserTransaction(@PathVariable String walletId, @PathVariable String transactionId) {
