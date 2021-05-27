@@ -12,5 +12,5 @@ public interface TransactionRepository extends CrudRepository<TransactionEntity,
 
     List<TransactionEntity> findAllByUserDetails(UserEntity userEntity);
 
-    TransactionEntity findByTransactionId(String extrasId);
+    TransactionEntity findByTransactionId(String transactionId);
 }

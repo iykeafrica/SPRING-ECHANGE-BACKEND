@@ -49,7 +49,7 @@ public class UserController {
         return returnValue;
     }
 
-    @PostMapping(path = "/{walletID}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+    @PostMapping(path = "/{walletID}/transactions", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public TransactionRest postTransaction(@PathVariable String walletID, @RequestBody TransactionRequestModel addUserExtrasRequest) {
         TransactionRest returnValue = new TransactionRest();
@@ -168,9 +168,9 @@ public class UserController {
         return returnValue;
     }
 
-    //http:localhost:8080/walletId/extras
-    @GetMapping(path = "/{walletId}/extras", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public List<TransactionRest> getUserExtras(@PathVariable String walletId) {
+    //http:localhost:8080/walletId/transactions
+    @GetMapping(path = "/{walletId}/transactions", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public List<TransactionRest> getUserTransactions(@PathVariable String walletId) {
         ModelMapper modelMapper = new ModelMapper();
 
         List<TransactionRest> returnValue = new ArrayList<>();
@@ -185,13 +185,13 @@ public class UserController {
         return returnValue;
     }
 
-    //http:localhost:8080/walletId/extras/addressId
-    @GetMapping(path = "/{walletId}/extras/{extrasId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public TransactionRest getUserExtra(@PathVariable String walletId, @PathVariable String extrasId) {
+    //http:localhost:8080/walletId/transactions/transactionId
+    @GetMapping(path = "/{walletId}/transactions/{transactionId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public TransactionRest getUserTransaction(@PathVariable String walletId, @PathVariable String transactionId) {
         ModelMapper modelMapper = new ModelMapper();
 
         TransactionRest returnValue = new TransactionRest();
-        TransactionDTO transactionDTO = transactionService.getTransaction(extrasId);
+        TransactionDTO transactionDTO = transactionService.getTransaction(transactionId);
 
         if (transactionDTO != null) {
             returnValue = modelMapper.map(transactionDTO, TransactionRest.class);

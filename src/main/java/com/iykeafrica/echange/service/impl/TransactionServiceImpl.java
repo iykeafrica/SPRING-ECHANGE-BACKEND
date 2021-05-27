@@ -38,8 +38,8 @@ public class TransactionServiceImpl implements TransactionService {
 
         if (userEntity == null) return returnValue;
 
-        Iterable<TransactionEntity> extrasEntities = transactionRepository.findAllByUserDetails(userEntity);
-        for (TransactionEntity transactionEntity : extrasEntities) {
+        Iterable<TransactionEntity> transactionEntities = transactionRepository.findAllByUserDetails(userEntity);
+        for (TransactionEntity transactionEntity : transactionEntities) {
             returnValue.add(modelMapper.map(transactionEntity, TransactionDTO.class));
         }
 
@@ -47,10 +47,10 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public TransactionDTO getTransaction(String extrasId) {
+    public TransactionDTO getTransaction(String transactionId) {
         TransactionDTO returnValue = new TransactionDTO();
 
-        TransactionEntity transactionEntity = transactionRepository.findByTransactionId(extrasId);
+        TransactionEntity transactionEntity = transactionRepository.findByTransactionId(transactionId);
 
         if (transactionEntity == null) return returnValue;
 
@@ -79,8 +79,8 @@ public class TransactionServiceImpl implements TransactionService {
         transactionEntity.setDate(transactions.getDate());
         transactionEntity.setUserDetails(userEntity);
 
-        TransactionEntity savedExtra = transactionRepository.save(transactionEntity);
-        returnValue = modelMapper.map(savedExtra, TransactionDTO.class);
+        TransactionEntity savedTransaction = transactionRepository.save(transactionEntity);
+        returnValue = modelMapper.map(savedTransaction, TransactionDTO.class);
 
         return returnValue;
     }
