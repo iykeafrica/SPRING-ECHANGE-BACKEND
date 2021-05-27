@@ -1,13 +1,10 @@
 package com.iykeafrica.echange.ui.controller;
 
-import com.iykeafrica.echange.service.ExtrasService;
+import com.iykeafrica.echange.service.TransactionService;
 import com.iykeafrica.echange.service.UserService;
-import com.iykeafrica.echange.shared.dto.ExtrasDTO;
+import com.iykeafrica.echange.shared.dto.TransactionDTO;
 import com.iykeafrica.echange.shared.dto.UserDto;
-import com.iykeafrica.echange.ui.model.request.UserSendMoneyRequest;
-import com.iykeafrica.echange.ui.model.request.UserSignUpRequest;
-import com.iykeafrica.echange.ui.model.request.UserUpdateFCMRequest;
-import com.iykeafrica.echange.ui.model.request.UserUpdatePersonalRecordRequest;
+import com.iykeafrica.echange.ui.model.request.*;
 import com.iykeafrica.echange.ui.model.response.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -28,10 +25,13 @@ public class UserController {
     UserService userService;
 
     @Autowired
-    ExtrasService extrasServices;
+    TransactionService transactionServices;
 
     @Autowired
-    ExtrasService extrasService;
+    TransactionService transactionService;
+
+    @Autowired
+    TransactionService transactionsService;
 
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -45,6 +45,21 @@ public class UserController {
         UserDto registeredUser = userService.createUser(userDto);
 
         returnValue = modelMapper.map(registeredUser, UserRest.class);
+
+        return returnValue;
+    }
+
+    @PostMapping(path = "/{walletID}/transactions", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public TransactionRest postTransaction(@PathVariable String walletID, @RequestBody TransactionRequestModel addUserExtrasRequest) {
+        TransactionRest returnValue = new TransactionRest();
+
+        ModelMapper modelMapper = new ModelMapper();
+        TransactionDTO transactionDTO = modelMapper.map(addUserExtrasRequest, TransactionDTO.class);
+
+        TransactionDTO addedExtra = transactionsService.postTransaction(walletID, transactionDTO);
+
+        returnValue = modelMapper.map(addedExtra, TransactionRest.class);
 
         return returnValue;
     }
@@ -153,32 +168,53 @@ public class UserController {
         return  returnValue;
     }
 
-    //http:localhost:8080/walletId/extras
-    @GetMapping(path = "/{walletId}/extras" , produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public List<ExtrasRest> getUserExtras(@PathVariable String walletId){
+    //http:localhost:8080/walletId/transactions
+    @GetMapping(path = "/{walletId}/transactions", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public List<TransactionRest> getUserTransactions(@PathVariable String walletId) {
         ModelMapper modelMapper = new ModelMapper();
 
-        List<ExtrasRest> returnValue = new ArrayList<>();
-        List<ExtrasDTO> extrasDTO = extrasServices.getExtras(walletId);
+        List<TransactionRest> returnValue = new ArrayList<>();
+        List<TransactionDTO> transactionDTO = transactionServices.getTransactions(walletId);
 
-        if (extrasDTO != null && !extrasDTO.isEmpty()) {
-            Type listType = new TypeToken<List<ExtrasRest>>() {}.getType();
-            returnValue = modelMapper.map(extrasDTO, listType);
+        if (transactionDTO != null && !transactionDTO.isEmpty()) {
+            Type listType = new TypeToken<List<TransactionRest>>() {
+            }.getType();
+            returnValue = modelMapper.map(transactionDTO, listType);
         }
 
         return returnValue;
     }
 
-    //http:localhost:8080/walletId/extras/addressId
-    @GetMapping(path = "/{walletId}/extras/{extrasId}" , produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ExtrasRest getUserExtra(@PathVariable String walletId, @PathVariable String extrasId){
+    //    @GetMapping(path = "/{walletId}/transactions", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+//    public List<TransactionRest> getUserTransactions(@RequestParam(value = "page", defaultValue = "0") int page,
+//                                                     @RequestParam(value = "limit", defaultValue = "12") int limit,
+//                                                     @RequestParam(value = "date", defaultValue = "date") long date,
+//                                                     @PathVariable String walletId) {
+//
+//        ModelMapper modelMapper = new ModelMapper();
+//
+//        List<TransactionRest> returnValue = new ArrayList<>();
+//        List<TransactionDTO> transactionDTO = transactionServices.getTransactions(page, limit, date, walletId);
+//
+//        if (transactionDTO != null && !transactionDTO.isEmpty()) {
+//            Type listType = new TypeToken<List<TransactionRest>>() {
+//            }.getType();
+//            returnValue = modelMapper.map(transactionDTO, listType);
+//        }
+//
+//        return returnValue;
+//    }
+
+    //http:localhost:8080/walletId/transactions/transactionId
+    @GetMapping(path = "/{walletId}/transactions/{transactionId}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public TransactionRest getUserTransaction(@PathVariable String walletId, @PathVariable String transactionId) {
         ModelMapper modelMapper = new ModelMapper();
 
-        ExtrasRest returnValue = new ExtrasRest();
-        ExtrasDTO extrasDTO = extrasService.getExtra(extrasId);
+        TransactionRest returnValue = new TransactionRest();
+        TransactionDTO transactionDTO = transactionService.getTransaction(transactionId);
 
-        if (extrasDTO != null) {
-            returnValue = modelMapper.map(extrasDTO, ExtrasRest.class);
+        if (transactionDTO != null) {
+            returnValue = modelMapper.map(transactionDTO, TransactionRest.class);
         }
 
         return returnValue;

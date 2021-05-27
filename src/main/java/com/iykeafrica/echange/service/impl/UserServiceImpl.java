@@ -4,7 +4,7 @@ import com.iykeafrica.echange.exceptions.UserServiceException;
 import com.iykeafrica.echange.io.entity.UserEntity;
 import com.iykeafrica.echange.io.repositories.UserRepository;
 import com.iykeafrica.echange.service.UserService;
-import com.iykeafrica.echange.shared.dto.ExtrasDTO;
+import com.iykeafrica.echange.shared.dto.TransactionDTO;
 import com.iykeafrica.echange.shared.dto.utils.Utils;
 import com.iykeafrica.echange.shared.dto.UserDto;
 import com.iykeafrica.echange.ui.model.response.ErrorMessages;
@@ -45,11 +45,11 @@ public class UserServiceImpl implements UserService {
             throw new UserServiceException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage()
                     + " for:\n" + user.getEmail() + " and:\n" + user.getPhoneNo());
 
-        for (int i = 0; i < user.getExtras().size(); i++){
-            ExtrasDTO extrasDTO = user.getExtras().get(i);
-            extrasDTO.setUserDetails(user);
-            extrasDTO.setExtrasId(utils.generateExtrasId(30));
-            user.getExtras().set(i, extrasDTO);
+        for (int i = 0; i < user.getTransactions().size(); i++) {
+            TransactionDTO transactionDTO = user.getTransactions().get(i);
+            transactionDTO.setUserDetails(user);
+            transactionDTO.setTransactionId(utils.generateExtrasId(30));
+            user.getTransactions().set(i, transactionDTO);
         }
 
         UserDto returnValue = new UserDto();
