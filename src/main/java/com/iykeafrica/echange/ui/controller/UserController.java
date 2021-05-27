@@ -31,10 +31,7 @@ public class UserController {
     TransactionService transactionService;
 
     @Autowired
-    TransactionService transactionHistory;
-
-    @Autowired
-    TransactionService transactionHistories;
+    TransactionService transactionsService;
 
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -54,50 +51,18 @@ public class UserController {
 
     @PostMapping(path = "/{walletID}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public TransactionRest addUserExtra(@PathVariable String walletID, @RequestBody TransactionRequestModel addUserExtrasRequest) {
+    public TransactionRest postTransaction(@PathVariable String walletID, @RequestBody TransactionRequestModel addUserExtrasRequest) {
         TransactionRest returnValue = new TransactionRest();
 
         ModelMapper modelMapper = new ModelMapper();
-//        UserDto userDto = modelMapper.map(addUserExtrasRequest, UserDto.class);
         TransactionDTO transactionDTO = modelMapper.map(addUserExtrasRequest, TransactionDTO.class);
 
-//        UserDto addedExtra = userService.createExtra(walletID, userDto);
-        TransactionDTO addedExtra = transactionHistory.postTransaction(walletID, transactionDTO);
+        TransactionDTO addedExtra = transactionsService.postTransaction(walletID, transactionDTO);
 
         returnValue = modelMapper.map(addedExtra, TransactionRest.class);
 
         return returnValue;
     }
-
-    @PostMapping(path = "/{walletID}/many", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
-            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public TransactionRest addUserExtras(@PathVariable String walletID, @RequestBody AddUserExtrasRequest addUserExtrasRequest) {
-        TransactionRest returnValue = new TransactionRest();
-
-        ModelMapper modelMapper = new ModelMapper();
-        UserDto userDto = modelMapper.map(addUserExtrasRequest, UserDto.class);
-
-        TransactionDTO addedExtras = transactionHistories.postTransactions(walletID, userDto);
-
-        returnValue = modelMapper.map(addedExtras, TransactionRest.class);
-
-        return returnValue;
-    }
-
-//    @PostMapping(path = "/{walletID}/many", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
-//            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-//    public UserRest addUserExtras(@PathVariable String walletID, @RequestBody AddUserExtrasRequest addUserExtrasRequest) {
-//        UserRest returnValue = new UserRest();
-//
-//        ModelMapper modelMapper = new ModelMapper();
-//        UserDto userDto = modelMapper.map(addUserExtrasRequest, UserDto.class);
-//
-//        UserDto addedExtras = userService.createExtras(walletID, userDto);
-//
-//        returnValue = modelMapper.map(addedExtras, UserRest.class);
-//
-//        return returnValue;
-//    }
 
     @GetMapping(path = "/{userName}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public UserRest getUser(@PathVariable String userName) { //for admin user only; with phone, email or walletId

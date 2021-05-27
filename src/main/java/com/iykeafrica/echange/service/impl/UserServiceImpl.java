@@ -35,9 +35,6 @@ public class UserServiceImpl implements UserService {
     Utils utils;
 
     @Autowired
-    TransactionRepository transactionRepository;
-
-    @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
@@ -75,38 +72,6 @@ public class UserServiceImpl implements UserService {
 
         return returnValue;
     }
-
-//    @Override
-//    public UserDto createExtras(String walletId, UserDto user) {
-//        UserEntity userEntity = userRepository.findByWalletId(walletId);
-//
-//        if (walletId == null)
-//            throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
-//
-//        UserEntity setUserEntity = new UserEntity();
-//
-//        ModelMapper modelMapper = new ModelMapper();
-//
-//        for (int i = 0; i < user.getExtras().size(); i++) {
-//            ExtrasEntity extrasEntity = modelMapper.map(user, ExtrasEntity.class);
-//
-//            ExtrasDTO extrasDTO = user.getExtras().get(i);
-//
-//            extrasEntity.setExtrasId(utils.generateExtrasId(30));
-//            extrasEntity.setAddress(extrasDTO.getAddress());
-//            extrasEntity.setType(extrasDTO.getType());
-//            extrasEntity.setUserDetails(userEntity);
-//
-//            ExtrasEntity savedExtra = extrasRepository.save(extrasEntity);
-//        }
-//
-//        UserEntity updatedExtras = userRepository.findByWalletId(walletId);
-//
-//        UserDto returnValue = new UserDto();
-//        returnValue = modelMapper.map(updatedExtras, UserDto.class);
-//
-//        return returnValue;
-//    }
 
     @Override
     public UserDto getUser(String userName) { //phoneNo, email or userId used to sign in successfully

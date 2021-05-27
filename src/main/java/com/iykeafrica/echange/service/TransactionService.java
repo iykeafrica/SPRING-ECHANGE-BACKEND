@@ -12,7 +12,4 @@ public interface TransactionService {
     TransactionDTO getTransaction(String extrasId);
 
     TransactionDTO postTransaction(String walletId, TransactionDTO transactionDTO);
-
-    TransactionDTO postTransactions(String walletId, UserDto userDto);
-
 }
