@@ -51,11 +51,11 @@ public class UserController {
 
     @PostMapping(path = "/{walletID}/transactions", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public TransactionRest postTransaction(@PathVariable String walletID, @RequestBody TransactionRequestModel addUserExtrasRequest) {
+    public TransactionRest postTransaction(@PathVariable String walletID, @RequestBody TransactionRequestModel addTransaction) {
         TransactionRest returnValue = new TransactionRest();
 
         ModelMapper modelMapper = new ModelMapper();
-        TransactionDTO transactionDTO = modelMapper.map(addUserExtrasRequest, TransactionDTO.class);
+        TransactionDTO transactionDTO = modelMapper.map(addTransaction, TransactionDTO.class);
 
         TransactionDTO addedExtra = transactionsService.postTransaction(walletID, transactionDTO);
 
@@ -88,7 +88,7 @@ public class UserController {
     @PutMapping(path = "{senderWalletId}/send-money/{requesterWalletId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public UserSendMoneyResponse sendMoney(@PathVariable String senderWalletId, @PathVariable String requesterWalletId,
-                                           @RequestBody UserSendMoneyRequest userSendMoneyRequest, @RequestBody TransactionRequestModel addUserExtrasRequest){
+                                           @RequestBody UserSendMoneyRequest userSendMoneyRequest){
         UserSendMoneyResponse returnValue = new UserSendMoneyResponse();
         UserDto userDto = new UserDto();
 
@@ -98,8 +98,8 @@ public class UserController {
 
         UserDto moneyCredited = userService.creditMoney(requesterWalletId, userDto);
 
-        postTransaction(senderWalletId, addUserExtrasRequest);
-        postTransaction(requesterWalletId, addUserExtrasRequest);
+        postTransaction(senderWalletId, userSendMoneyRequest.getTransactions());
+        postTransaction(requesterWalletId, userSendMoneyRequest.getTransactions());
 
         BeanUtils.copyProperties(moneyCredited, returnValue);
 
