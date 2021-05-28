@@ -21,6 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 @Service
@@ -49,12 +50,27 @@ public class UserServiceImpl implements UserService {
             throw new UserServiceException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage()
                     +  " for:\n" + user.getPhoneNo());
 
-        for (int i = 0; i < user.getTransactions().size(); i++) {
-            TransactionDTO transactionDTO = user.getTransactions().get(i);
-            transactionDTO.setUserDetails(user);
-            transactionDTO.setTransactionId(utils.generateExtrasId(30));
-            user.getTransactions().set(i, transactionDTO);
-        }
+//        for (int i = 0; i < user.getTransactions().size(); i++) {
+//            TransactionDTO transactionDTO = user.getTransactions().get(i);
+//            transactionDTO.setUserDetails(user);
+//            transactionDTO.setTransactionId(utils.generateExtrasId(30));
+//            user.getTransactions().set(i, transactionDTO);
+//        }
+        List<TransactionDTO> transactionDTOs = new ArrayList<>();
+
+        TransactionDTO transactionDTO = new TransactionDTO();
+        transactionDTO.setUserDetails(user);
+        transactionDTO.setTransactionId(utils.generateExtrasId(30));
+        transactionDTO.setAlert("Credit");
+        transactionDTO.setName("eChange");
+        transactionDTO.setDescription("Welcome bonus!");
+        transactionDTO.setAmount(1000.0);
+        transactionDTO.setPreviousBalance(0.0);
+        transactionDTO.setAvailableBalance(1000.0);
+        transactionDTO.setDate(Calendar.getInstance().getTimeInMillis());
+
+        transactionDTOs.add(transactionDTO);
+        user.setTransactions(transactionDTOs);
 
         UserDto returnValue = new UserDto();
         ModelMapper modelMapper = new ModelMapper();

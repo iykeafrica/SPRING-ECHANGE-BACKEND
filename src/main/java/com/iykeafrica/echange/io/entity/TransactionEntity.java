@@ -27,10 +27,10 @@ public class TransactionEntity implements Serializable {
     private double amount;
 
     @Column(nullable = false, length = 120)
-    private double previousBalance = 0.0;
+    private double previousBalance;
 
     @Column(nullable = false, length = 120)
-    private double availableBalance = 1000.0;
+    private double availableBalance;
 
     @Column(nullable = false, length = 120)
     private long date;
