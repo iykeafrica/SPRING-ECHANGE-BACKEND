@@ -14,7 +14,7 @@ public class TransactionEntity implements Serializable {
     @Column(nullable = false, length = 30)
     private String transactionId;
 
-    @Column(nullable = false, length = 6)
+    @Column(nullable = false, length = 15)
     private String alert;
 
     @Column(nullable = false, length = 120)
