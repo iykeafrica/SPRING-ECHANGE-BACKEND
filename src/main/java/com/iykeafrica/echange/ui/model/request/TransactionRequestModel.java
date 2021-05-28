@@ -4,8 +4,7 @@ public class TransactionRequestModel {
     private String alert;
     private String name;
     private String description;
-    private double previousBalance;
-    private double availableBalance;
+    private double amount;
     private long date;
 
     public String getAlert() {
@@ -32,20 +31,12 @@ public class TransactionRequestModel {
         this.description = description;
     }
 
-    public double getPreviousBalance() {
-        return previousBalance;
+    public double getAmount() {
+        return amount;
     }
 
-    public void setPreviousBalance(double previousBalance) {
-        this.previousBalance = previousBalance;
-    }
-
-    public double getAvailableBalance() {
-        return availableBalance;
-    }
-
-    public void setAvailableBalance(double availableBalance) {
-        this.availableBalance = availableBalance;
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 
     public long getDate() {

@@ -24,6 +24,9 @@ public class TransactionEntity implements Serializable {
     private String description;
 
     @Column(nullable = false, length = 120)
+    private double amount;
+
+    @Column(nullable = false, length = 120)
     private double previousBalance;
 
     @Column(nullable = false, length = 120)
@@ -74,6 +77,14 @@ public class TransactionEntity implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 
     public double getPreviousBalance() {

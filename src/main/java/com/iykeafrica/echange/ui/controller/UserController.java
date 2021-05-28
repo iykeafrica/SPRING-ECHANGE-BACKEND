@@ -87,7 +87,8 @@ public class UserController {
     //http://localhost:8081/echange-app-ws/users/NllBt6fcMB7Rk71AYJvVvU6mjIlHdo/send-money/gUFGXOrRo4Wtfc1DDPXBzTMCevNe0t
     @PutMapping(path = "{senderWalletId}/send-money/{requesterWalletId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public UserSendMoneyResponse sendMoney(@PathVariable String senderWalletId, @PathVariable String requesterWalletId, @RequestBody UserSendMoneyRequest userSendMoneyRequest){
+    public UserSendMoneyResponse sendMoney(@PathVariable String senderWalletId, @PathVariable String requesterWalletId,
+                                           @RequestBody UserSendMoneyRequest userSendMoneyRequest, @RequestBody TransactionRequestModel addUserExtrasRequest){
         UserSendMoneyResponse returnValue = new UserSendMoneyResponse();
         UserDto userDto = new UserDto();
 
@@ -96,6 +97,10 @@ public class UserController {
         UserDto moneyDebited = userService.debitMoney(senderWalletId, userDto);
 
         UserDto moneyCredited = userService.creditMoney(requesterWalletId, userDto);
+
+        postTransaction(senderWalletId, addUserExtrasRequest);
+        postTransaction(requesterWalletId, addUserExtrasRequest);
+
         BeanUtils.copyProperties(moneyCredited, returnValue);
 
         return returnValue;

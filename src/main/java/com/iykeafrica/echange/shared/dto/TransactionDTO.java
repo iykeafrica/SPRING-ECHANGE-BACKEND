@@ -9,6 +9,7 @@ public class TransactionDTO implements Serializable {
     private String alert;
     private String name;
     private String description;
+    private double amount;
     private double previousBalance;
     private double availableBalance;
     private long date;
@@ -52,6 +53,14 @@ public class TransactionDTO implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 
     public double getPreviousBalance() {

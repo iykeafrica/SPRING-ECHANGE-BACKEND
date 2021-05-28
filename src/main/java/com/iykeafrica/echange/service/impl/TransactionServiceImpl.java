@@ -51,7 +51,6 @@ public class TransactionServiceImpl implements TransactionService {
         return returnValue;
     }
 
-
 //    @Override
 //    public List<TransactionDTO> getTransactions(int page, int limit, long date, String walletId) {
 //        ModelMapper modelMapper = new ModelMapper();
@@ -101,12 +100,18 @@ public class TransactionServiceImpl implements TransactionService {
 
         TransactionEntity transactionEntity = modelMapper.map(transactions, TransactionEntity.class);
 
+        double walletBalance = userEntity.getWalletBalance();
+
         transactionEntity.setTransactionId(utils.generateExtrasId(30));
         transactionEntity.setAlert(transactions.getAlert());
         transactionEntity.setName(transactions.getName());
         transactionEntity.setDescription(transactions.getDescription());
-        transactionEntity.setPreviousBalance(transactions.getPreviousBalance());
-        transactionEntity.setAvailableBalance(transactions.getAvailableBalance());
+        transactionEntity.setAmount(transactions.getAmount());
+        if (transactions.getAlert() == "Credit")
+            transactionEntity.setPreviousBalance(walletBalance - transactionEntity.getAmount());
+        else if (transactions.getAlert() == "Debit")
+            transactionEntity.setPreviousBalance(walletBalance + transactionEntity.getAmount());
+        transactionEntity.setAvailableBalance(walletBalance);
         transactionEntity.setDate(transactions.getDate());
         transactionEntity.setUserDetails(userEntity);
 

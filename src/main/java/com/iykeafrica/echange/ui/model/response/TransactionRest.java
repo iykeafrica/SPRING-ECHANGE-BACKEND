@@ -5,6 +5,7 @@ public class TransactionRest {
     private String alert;
     private String name;
     private String description;
+    private double amount;
     private double previousBalance;
     private double availableBalance;
     private long date;
@@ -47,6 +48,14 @@ public class TransactionRest {
 
     public void setPreviousBalance(double previousBalance) {
         this.previousBalance = previousBalance;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 
     public double getAvailableBalance() {
