@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
         transactionDTO.setAlert("Credit");
         transactionDTO.setName("eChange");
         transactionDTO.setDescription("Welcome bonus!");
-        transactionDTO.setAmount(1000.0);
+        transactionDTO.setAmount(100.0);
         transactionDTO.setPreviousBalance(0.0);
         transactionDTO.setAvailableBalance(1000.0);
         transactionDTO.setDate(Calendar.getInstance().getTimeInMillis());
