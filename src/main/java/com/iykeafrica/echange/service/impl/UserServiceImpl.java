@@ -41,9 +41,13 @@ public class UserServiceImpl implements UserService {
         UserEntity signUpEmail = userRepository.findByEmail(user.getEmail());
         UserEntity signUpPhone = userRepository.findByPhoneNo(user.getPhoneNo());
 
-        if (signUpEmail != null && signUpPhone != null)
+        if (signUpEmail != null)
             throw new UserServiceException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage()
-                    + " for:\n" + user.getEmail() + " and:\n" + user.getPhoneNo());
+                    + " for:\n" + user.getEmail());
+
+        if (signUpPhone != null)
+            throw new UserServiceException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage()
+                    +  " for:\n" + user.getPhoneNo());
 
         for (int i = 0; i < user.getTransactions().size(); i++) {
             TransactionDTO transactionDTO = user.getTransactions().get(i);
