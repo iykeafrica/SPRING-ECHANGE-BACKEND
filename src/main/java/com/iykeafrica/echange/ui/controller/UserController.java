@@ -99,12 +99,11 @@ public class UserController {
         UserDto moneyCredited = userService.creditMoney(requesterWalletId, userDto);
 
         TransactionRequestModel transactionsReceiver = userSendMoneyRequest.getTransactions();
-        transactionsReceiver.setAlert(transactionsReceiver.getAlert());
+        transactionsReceiver.setAlert("Debit");
         transactionsReceiver.setName(transactionsReceiver.getName());
         transactionsReceiver.setDescription(transactionsReceiver.getDescription());
         transactionsReceiver.setDate(transactionsReceiver.getDate());
         transactionsReceiver.setAmount(transactionsReceiver.getAmount());
-
 
         postTransaction(senderWalletId, userSendMoneyRequest.getTransactions());
         postTransaction(requesterWalletId, transactionsReceiver);
