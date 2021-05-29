@@ -98,6 +98,8 @@ public class UserController {
 
         UserDto moneyCredited = userService.creditMoney(requesterWalletId, userDto);
 
+        postTransaction(senderWalletId, userSendMoneyRequest.getTransactions());
+
         TransactionRequestModel transactionsReceiver = userSendMoneyRequest.getTransactions();
         transactionsReceiver.setAlert("Credit");
         transactionsReceiver.setName(transactionsReceiver.getName());
@@ -105,7 +107,6 @@ public class UserController {
         transactionsReceiver.setDate(transactionsReceiver.getDate());
         transactionsReceiver.setAmount(transactionsReceiver.getAmount());
 
-        postTransaction(senderWalletId, userSendMoneyRequest.getTransactions());
         postTransaction(requesterWalletId, transactionsReceiver);
 
         BeanUtils.copyProperties(moneyCredited, returnValue);
